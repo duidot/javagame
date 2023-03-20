@@ -4,9 +4,9 @@ import java.awt.*;
 import java.awt.*; //per Container
 import javax.swing.*; //per JFrame, JPanel,...
 
-public class myFrame extends JFrame {
+public class MyFrame extends JFrame {
 
-    public myFrame() {
+    public MyFrame() {
         JPanel p = new JPanel();
         JLabel l = new JLabel("Etichetta");
         JButton b = new JButton("Pulsante");
@@ -19,6 +19,6 @@ public class myFrame extends JFrame {
     }
 
     public static void main(String args[]) {
-        myFrame f = new myFrame();
+        MyFrame f = new MyFrame();
     }
 }
