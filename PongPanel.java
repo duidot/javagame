@@ -32,12 +32,12 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 	Thread gameThread; // Thread eseguibile
 	BufferedImage buffer; // awg.image
-	Graphics graphics;
+	Graphics2D graphics;
 
 	Paddle paddleR, paddleL; // istanza "paddle" dalla classe Paddle
     Ball ball;
 	Score score;
-	int mulSpeed = 1; 
+	double velox = 1;
 
 	PongPanel() { // costruttore
 		this.setBackground(Color.cyan);
@@ -76,20 +76,20 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 	// ------------------------------- non toccare -------------------------------
 	public void paintComponent(Graphics g) {
-
 		super.paintComponent(g);
+      	Graphics2D g2 = (Graphics2D) g;
 
 		buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-		graphics = buffer.getGraphics();
+		graphics = buffer.createGraphics();
 
 		draw(graphics);
 
-		g.drawImage(buffer, 0, 0, this);
+		g2.drawImage(buffer, 0, 0, this);
 
 	}
 	// ----------------------------------------------------------------------------
 
-	public void draw(Graphics g) {
+	public void draw(Graphics2D g) {
 
 		paddleR.draw(g);
         paddleL.draw(g);
@@ -97,6 +97,8 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 		score.draw(g);
 
         ball.draw(g);
+
+		
 
 		// disegna altri oggetti qui
 
@@ -114,20 +116,11 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 		paddleL.moveY();
         paddleR.moveY();
 		
-		if(score.hits >= 4 && score.hits < 12)
-			if(mulSpeed == 1){
-				ball.ballSpeed *= 1.6;
-				mulSpeed = 2;
-			}
-		else if(score.hits >= 12)
-			if(mulSpeed == 2){
-				ball.ballSpeed *= 2;
-				mulSpeed =3;
-			}
+		
 
         ball.move();
 		
-		System.out.println(score.hits);
+		System.out.println(score.hits + " - " + ball.dx + " - " + ball.dy);
 	}
 
 	public void checkCollision() {
@@ -144,6 +137,7 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 		if (paddleL.y >= GAME_HEIGHT - PADDLE_WIDTH)
 			paddleL.y = GAME_HEIGHT - PADDLE_WIDTH;
+			
 
         if (paddleR.x <= 0)
 			paddleR.x = 0;
@@ -161,22 +155,24 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 		if (ball.y <= 0) {
 			ball.dy = -ball.dy;
+			playSound("boundary.wav");
 		}
 		if (ball.y >= GAME_HEIGHT - BALL_WIDTH) {
 			ball.dy = -ball.dy;
+			playSound("boundary.wav");
 		}
 
 		if (ball.x <= 0) {
 			ball.dx = 0;
 			ball.x = GAME_WIDTH / 2;
-			ball.setDX(-1);
+			ball.setDX(-velox);
 			score.player2++;
 			playSound("point.wav");
 		}
 		if (ball.x >= GAME_WIDTH - BALL_WIDTH) {
 			ball.dx = 0;
 			ball.x = GAME_WIDTH / 2;
-			ball.setDX(1);
+			ball.setDX(velox);
 			score.player1++;
 			playSound("point.wav");
 		}
@@ -185,16 +181,30 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 		
 		if (ball.intersects(paddleR)) {
-			playSound("paddle.wav");
-			ball.dx = -ball.dx;
 			score.hits++;
+			playSound("paddle.wav");
+			if(score.hits >= 4 && score.hits < 12)
+				velox = 1.6;
+			if(score.hits >= 12)
+				velox = 2;
+			ball.setDX(ball.dx<0?-velox:velox);
+			ball.dx = -ball.dx;
+			
 		}
 
 		if (ball.intersects(paddleL)) {
-			playSound("paddle.wav");
-			ball.dx = -ball.dx;
 			score.hits++;
+			playSound("paddle.wav");
+			if(score.hits >= 4 && score.hits < 12)
+				velox = 1.6;
+			if(score.hits >= 12)
+				velox = 2;
+			ball.setDX(ball.dx<0?-velox:velox);
+			ball.dx = -ball.dx;
+			
 		}
+
+		
 		        
 		// ---------------------------------------------------
 
@@ -212,10 +222,15 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 			delta += (now - lastTime) / duration; // tempo trascorso è > intervallo? se sì, incrementa delta
 			lastTime = now;
 
+			
 			if (delta >= 1) {
 
 				move(); // calls move() method for paddle1...
 				checkCollision(); // checks collisions of paddles and boundary
+				
+				// controllo dei tocchi ed incremento della velocità orizzontale
+								
+				
 
 				repaint(); // is used to tell a component (gamepanel) to repaint itself.
 				delta--;
