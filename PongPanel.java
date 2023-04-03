@@ -10,7 +10,7 @@ import javax.sound.sampled.*;
 
 import javax.swing.*; //per utilizzare JPanel
 
-public class GamePanel extends JPanel implements KeyListener, Runnable {
+public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 	// definizione costanti
 	static final int GAME_HEIGHT = 485;
@@ -37,7 +37,7 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
 	Paddle paddleR, paddleL; // istanza "paddle" dalla classe Paddle
     Ball ball;
 
-	GamePanel() { // costruttore
+	PongPanel() { // costruttore
 		this.setBackground(Color.cyan);
 
 
