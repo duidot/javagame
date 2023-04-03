@@ -18,10 +18,10 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 	static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH, GAME_HEIGHT);
 
 	static final int PADDLE_WIDTH = 100;
-	static final int PADDLE_HEIGHT = 10; // orizzontale
+	static final int PADDLE_HEIGHT = 16; // orizzontale
 
-    static final int BALL_WIDTH = 10;
-    static final int BALL_HEIGHT = 10;
+    static final int BALL_WIDTH = 16;
+    static final int BALL_HEIGHT = 16;
 	// remarks from Mr. Alcorn:
 	// The problem you noticed about the paddle not going all the way to the top
 	// was left in because without it good players could monopolize the game.
@@ -36,6 +36,8 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 	Paddle paddleR, paddleL; // istanza "paddle" dalla classe Paddle
     Ball ball;
+	Score score;
+	int mulSpeed = 1; 
 
 	PongPanel() { // costruttore
 		this.setBackground(Color.cyan);
@@ -47,6 +49,11 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
         paddleL = new Paddle((DISTANZA), ((int)(GAME_HEIGHT / 2) - (int)(PADDLE_WIDTH / 2)),
         PADDLE_HEIGHT, PADDLE_WIDTH, 2);
+
+		score = new Score(GAME_WIDTH, GAME_HEIGHT);
+		
+		score.player1 = 0;
+		score.player2 = 0;
 
 		this.setFocusable(true);
 		this.setPreferredSize(SCREEN_SIZE);
@@ -87,6 +94,8 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 		paddleR.draw(g);
         paddleL.draw(g);
 
+		score.draw(g);
+
         ball.draw(g);
 
 		// disegna altri oggetti qui
@@ -104,9 +113,21 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 		paddleL.moveY();
         paddleR.moveY();
+		
+		if(score.hits >= 4 && score.hits < 12)
+			if(mulSpeed == 1){
+				ball.ballSpeed *= 1.6;
+				mulSpeed = 2;
+			}
+		else if(score.hits >= 12)
+			if(mulSpeed == 2){
+				ball.ballSpeed *= 2;
+				mulSpeed =3;
+			}
 
         ball.move();
-
+		
+		System.out.println(score.hits);
 	}
 
 	public void checkCollision() {
@@ -145,17 +166,34 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 			ball.dy = -ball.dy;
 		}
 
+		if (ball.x <= 0) {
+			ball.dx = 0;
+			ball.x = GAME_WIDTH / 2;
+			ball.setDX(-1);
+			score.player2++;
+			playSound("point.wav");
+		}
+		if (ball.x >= GAME_WIDTH - BALL_WIDTH) {
+			ball.dx = 0;
+			ball.x = GAME_WIDTH / 2;
+			ball.setDX(1);
+			score.player1++;
+			playSound("point.wav");
+		}
+
 		// la palla rimbalza quando tocca i margini destro e sinistro
 
 		
 		if (ball.intersects(paddleR)) {
 			playSound("paddle.wav");
 			ball.dx = -ball.dx;
+			score.hits++;
 		}
 
 		if (ball.intersects(paddleL)) {
 			playSound("paddle.wav");
 			ball.dx = -ball.dx;
+			score.hits++;
 		}
 		        
 		// ---------------------------------------------------
@@ -268,13 +306,13 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 	public void playSound(String name) {
 		try {
-		Clip suono = AudioSystem.getClip();
-		suono.open(AudioSystem.getAudioInputStream(getClass().getResource(name)));
-		suono.start();
+			Clip suono = AudioSystem.getClip();
+			suono.open(AudioSystem.getAudioInputStream(getClass().getResource(name)));
+			suono.start();
 		}
 		catch (Exception exc)
 		{
-		exc.printStackTrace(System.out);
+			exc.printStackTrace(System.out);
 		}
 		
 		} //end playSound()
