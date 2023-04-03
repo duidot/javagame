@@ -20,8 +20,8 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 	static final int PADDLE_WIDTH = 100;
 	static final int PADDLE_HEIGHT = 16; // orizzontale
 
-    static final int BALL_WIDTH = 16;
-    static final int BALL_HEIGHT = 16;
+    static final int BALL_WIDTH = 12;
+    static final int BALL_HEIGHT = 12;
 	// remarks from Mr. Alcorn:
 	// The problem you noticed about the paddle not going all the way to the top
 	// was left in because without it good players could monopolize the game.
@@ -38,6 +38,7 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
     Ball ball;
 	Score score;
 	double velox = 1;
+	double veloy = 0;
 
 	PongPanel() { // costruttore
 		this.setBackground(Color.cyan);
@@ -120,7 +121,7 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
         ball.move();
 		
-		System.out.println(score.hits + " - " + ball.dx + " - " + ball.dy);
+		
 	}
 
 	public void checkCollision() {
@@ -189,7 +190,23 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 				velox = 2;
 			ball.setDX(ball.dx<0?-velox:velox);
 			ball.dx = -ball.dx;
-			
+			double zone = paddleR.intersection(ball).y - paddleR.getCenterY();
+			int segno = 1;
+			if(zone < 0){
+				zone = -zone;
+				segno = -segno;
+			}
+			if(zone < 12)
+				veloy = 0;
+			if(zone >= 13 && zone < 26)
+				veloy = 0.7;
+			if(zone >= 27 && zone < 41)
+				veloy = 1.4;
+			if(zone >= 41)
+				veloy = 2;
+
+			veloy *= segno;
+			ball.setDY(veloy);		
 		}
 
 		if (ball.intersects(paddleL)) {
@@ -201,7 +218,23 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 				velox = 2;
 			ball.setDX(ball.dx<0?-velox:velox);
 			ball.dx = -ball.dx;
-			
+			double zone = paddleL.intersection(ball).y - paddleL.getCenterY();
+			int segno = 1;
+			if(zone < 0){
+				zone = -zone;
+				segno = -segno;
+			}
+			if(zone < 12)
+				veloy = 0;
+			if(zone >= 13 && zone < 26)
+				veloy = 0.7;
+			if(zone >= 27 && zone < 41)
+				veloy = 1.4;
+			if(zone >= 41)
+				veloy = 2;
+
+			veloy *= segno;
+			ball.setDY(veloy);		
 		}
 
 		
