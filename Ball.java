@@ -6,7 +6,7 @@ public class Ball extends Rectangle {
     Random random;
     int dx;
     int dy;
-    int ballSpeed = 5;
+    int ballSpeed = 10;
 
     // metodo costruttore
     public Ball(int x, int y, int width, int height) {

@@ -17,11 +17,11 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 	static final int GAME_WIDTH = (int) (GAME_HEIGHT * (1.6));
 	static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH, GAME_HEIGHT);
 
-	static final int PADDLE_WIDTH = 100;
-	static final int PADDLE_HEIGHT = 16; // orizzontale
+	static final int PADDLE_WIDTH = 16;
+	static final int PADDLE_HEIGHT = 100; // 
 
-    static final int BALL_WIDTH = 12;
-    static final int BALL_HEIGHT = 12;
+    static final int BALL_WIDTH = 14;
+    static final int BALL_HEIGHT = 14;
 	// remarks from Mr. Alcorn:
 	// The problem you noticed about the paddle not going all the way to the top
 	// was left in because without it good players could monopolize the game.
@@ -43,13 +43,13 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 	PongPanel() { // costruttore
 		this.setBackground(Color.cyan);
 
-
+		
 		// creo una istanza "paddle" dalla classe Paddle
-		paddleR = new Paddle((GAME_WIDTH - DISTANZA - PADDLE_HEIGHT), ((int)(GAME_HEIGHT / 2) - (int)(PADDLE_WIDTH / 2)),
-        PADDLE_HEIGHT, PADDLE_WIDTH, 1);
+		paddleR = new Paddle((GAME_WIDTH - DISTANZA - PADDLE_WIDTH), ((int)(GAME_HEIGHT / 2) - (int)(PADDLE_HEIGHT / 2)),
+        PADDLE_WIDTH, PADDLE_HEIGHT, 1);
 
-        paddleL = new Paddle((DISTANZA), ((int)(GAME_HEIGHT / 2) - (int)(PADDLE_WIDTH / 2)),
-        PADDLE_HEIGHT, PADDLE_WIDTH, 2);
+        paddleL = new Paddle((DISTANZA), ((int)(GAME_HEIGHT / 2) - (int)(PADDLE_HEIGHT / 2)),
+        PADDLE_WIDTH, PADDLE_HEIGHT, 2);
 
 		score = new Score(GAME_WIDTH, GAME_HEIGHT);
 		
@@ -114,12 +114,14 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 	public void move() {
 
-		paddleL.moveY();
-        paddleR.moveY();
-		
 		
 
-        ball.move();
+		paddleL.moveY(ball.y);
+        paddleR.moveY(1);
+		
+		
+		ball.move();
+        
 		
 		
 	}
@@ -136,8 +138,8 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
         if (paddleL.y <= 0)
 			paddleL.y = 0;
 
-		if (paddleL.y >= GAME_HEIGHT - PADDLE_WIDTH)
-			paddleL.y = GAME_HEIGHT - PADDLE_WIDTH;
+		if (paddleL.y >= GAME_HEIGHT - PADDLE_HEIGHT)
+			paddleL.y = GAME_HEIGHT - PADDLE_HEIGHT;
 			
 
         if (paddleR.x <= 0)
@@ -149,8 +151,8 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
         if (paddleR.y <= 0)
 			paddleR.y = 0;
 
-		if (paddleR.y >= GAME_HEIGHT - PADDLE_WIDTH)
-			paddleR.y = GAME_HEIGHT - PADDLE_WIDTH;
+		if (paddleR.y >= GAME_HEIGHT - PADDLE_HEIGHT)
+			paddleR.y = GAME_HEIGHT - PADDLE_HEIGHT;
         
 		// check collision ball
 
@@ -207,6 +209,8 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 			veloy *= segno;
 			ball.setDY(veloy);		
+
+			
 		}
 
 		if (ball.intersects(paddleL)) {
@@ -235,6 +239,8 @@ public class PongPanel extends JPanel implements KeyListener, Runnable {
 
 			veloy *= segno;
 			ball.setDY(veloy);		
+
+			
 		}
 
 		

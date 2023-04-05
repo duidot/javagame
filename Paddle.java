@@ -27,8 +27,11 @@ public class Paddle extends Rectangle {
 		x = x + dx;
 	}
 
-	public void moveY() {
-		y = y + dy;
+	public void moveY(int dBall) {
+		if(dBall == 1)
+			y = y + dy;
+		else
+			y = dBall;
 	}
 
 	public void draw(Graphics2D g) {
